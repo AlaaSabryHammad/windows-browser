@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Windows 10</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='9' height='9' fill='%230078d7'/%3E%3Crect x='13' y='2' width='9' height='9' fill='%230078d7'/%3E%3Crect x='2' y='13' width='9' height='9' fill='%230078d7'/%3E%3Crect x='13' y='13' width='9' height='9' fill='%230078d7'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/desktop.css">
+<link rel="stylesheet" href="css/taskbar.css">
+<link rel="stylesheet" href="css/window.css">
+<link rel="stylesheet" href="css/apps.css">
+</head>
+<body data-theme="light">
+
+  <!-- Desktop -->
+  <div id="wallpaper"></div>
+  <div id="desktop-root" class="hidden">
+    <div id="desktop-icons"></div>
+    <div id="selection-box" class="hidden"></div>
+    <div id="windows-layer"></div>
+  </div>
+  <div id="snap-preview" class="hidden"></div>
+  <div id="taskview-overlay" class="hidden"></div>
+
+  <!-- Taskbar (built by js) -->
+  <div id="taskbar" class="hidden"></div>
+
+  <!-- Global widgets -->
+  <div id="context-menu" class="hidden"></div>
+  <div id="toasts"></div>
+  <div id="dialog-layer" class="hidden"></div>
+
+  <!-- Visual filters (pointer-events: none) -->
+  <div id="nightlight" class="hidden"></div>
+  <div id="brightness-overlay" class="hidden"></div>
+
+  <!-- Lock screen -->
+  <div id="lock-screen" class="hidden">
+    <div class="lock-bg"></div>
+    <div class="lock-clock">
+      <div class="lock-time">12:00 PM</div>
+      <div class="lock-date">Friday, October 1</div>
+    </div>
+    <div class="lock-hint">Click anywhere or press Enter to sign in</div>
+    <div class="lock-login hidden">
+      <div class="lock-login-inner">
+        <div class="avatar">A</div>
+        <div class="username">Alaa</div>
+        <button class="btn primary" id="signin-btn">Sign in</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Boot screen -->
+  <div id="boot-screen" class="hidden">
+    <div class="boot-logo">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="9" height="9" fill="#0078d7"/><rect x="13" y="2" width="9" height="9" fill="#0078d7"/>
+        <rect x="2" y="13" width="9" height="9" fill="#0078d7"/><rect x="13" y="13" width="9" height="9" fill="#0078d7"/>
+      </svg>
+    </div>
+    <div class="spinner"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  </div>
+
+  <!-- Shutdown / restart screens -->
+  <div id="shutdown-screen" class="hidden"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

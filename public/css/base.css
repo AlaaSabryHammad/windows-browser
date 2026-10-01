@@ -1,0 +1,201 @@
+/* ============ Windows 10 Web — base ============ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --accent: #0078d7;
+  --accent-dark: #005a9e;
+  --accent-light: #e5f1fb;
+  --accent-text: #ffffff;
+
+  --win-bg: #ffffff;
+  --win-border: #9d9d9d;
+  --titlebar: #ffffff;
+  --text: #1a1a1a;
+  --text-muted: #666;
+  --panel: #f2f2f2;
+  --panel-2: #eaeaea;
+  --panel-border: #d6d6d6;
+  --list-hover: #e5f1fb;
+  --input-bg: #ffffff;
+  --input-border: #7a7a7a;
+}
+
+body[data-theme="dark"] {
+  --win-bg: #202020;
+  --win-border: #4d4d4d;
+  --titlebar: #202020;
+  --text: #f2f2f2;
+  --text-muted: #9a9a9a;
+  --panel: #2b2b2b;
+  --panel-2: #333333;
+  --panel-border: #3f3f3f;
+  --list-hover: #333333;
+  --input-bg: #333333;
+  --input-border: #5a5a5a;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  background: #000;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+}
+
+input, textarea { user-select: text; -webkit-user-select: text; font-family: inherit; }
+.selectable, .selectable * { user-select: text; -webkit-user-select: text; }
+
+.hidden { display: none !important; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #b8b8b8; border: 2px solid transparent; background-clip: content-box; border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: #8f8f8f; border: 2px solid transparent; background-clip: content-box; }
+body[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #555; border: 2px solid transparent; background-clip: content-box; }
+body[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #777; }
+
+img { -webkit-user-drag: none; }
+svg { display: block; }
+
+/* ---- buttons ---- */
+.btn {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 24px;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--text);
+  min-width: 88px;
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--accent); background: var(--list-hover); }
+.btn:active { background: var(--panel-2); color: #000; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { background: var(--accent-dark); }
+
+.toolbar-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border: none; background: transparent; color: var(--text);
+  cursor: pointer; border-radius: 3px;
+}
+.toolbar-btn:hover { background: var(--list-hover); }
+.toolbar-btn:active { background: var(--panel-2); }
+.toolbar-btn:disabled { opacity: .4; cursor: default; }
+.toolbar-btn:disabled:hover { background: transparent; }
+
+/* ============ Boot screen ============ */
+#boot-screen {
+  position: fixed; inset: 0; z-index: 9990;
+  background: #000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+#boot-screen .boot-logo { width: 130px; height: 130px; margin-bottom: 110px; animation: bootpulse 2.4s ease infinite; }
+#boot-screen .boot-logo svg { width: 100%; height: 100%; }
+@keyframes bootpulse { 0%,100% { opacity: .85; } 50% { opacity: 1; } }
+
+.spinner { position: relative; width: 36px; height: 36px; }
+.spinner span {
+  position: absolute; left: 50%; top: 0;
+  width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%;
+  background: #fff; opacity: 0;
+  transform-origin: 2.5px 18px;
+  animation: orbit 2.2s cubic-bezier(.6,.05,.4,.95) infinite;
+}
+.spinner span:nth-child(2) { animation-delay: .15s; }
+.spinner span:nth-child(3) { animation-delay: .3s; }
+.spinner span:nth-child(4) { animation-delay: .45s; }
+.spinner span:nth-child(5) { animation-delay: .6s; }
+.spinner span:nth-child(6) { animation-delay: .75s; }
+@keyframes orbit {
+  0%   { transform: rotate(0deg);    opacity: 0; }
+  4%   { opacity: .95; }
+  36%  { transform: rotate(190deg);  opacity: .95; }
+  40%  { transform: rotate(200deg);  opacity: 0; }
+  100% { transform: rotate(360deg);  opacity: 0; }
+}
+
+/* ============ Lock screen ============ */
+#lock-screen { position: fixed; inset: 0; z-index: 9950; color: #fff; }
+#lock-screen .lock-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  transition: filter .4s ease, transform 6s ease;
+}
+#lock-screen.show-login .lock-bg { filter: blur(14px) brightness(.55); }
+#lock-screen .lock-clock {
+  position: absolute; left: 6vw; bottom: 14vh;
+  text-shadow: 0 2px 14px rgba(0,0,0,.6);
+  transition: opacity .3s;
+}
+#lock-screen .lock-time { font-size: 88px; font-weight: 200; line-height: 1; }
+#lock-screen .lock-date { font-size: 26px; font-weight: 300; margin-top: 6px; }
+#lock-screen.show-login .lock-clock { opacity: 0; }
+#lock-screen .lock-hint {
+  position: absolute; bottom: 5vh; left: 0; right: 0; text-align: center;
+  font-size: 13px; opacity: .75; transition: opacity .3s;
+}
+#lock-screen.show-login .lock-hint { opacity: 0; }
+#lock-screen .lock-login {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+#lock-screen .lock-login-inner { display: flex; flex-direction: column; align-items: center; }
+#lock-screen .avatar {
+  width: 110px; height: 110px; border-radius: 50%;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 54px; font-weight: 300; color: #fff;
+  box-shadow: 0 4px 30px rgba(0,0,0,.4);
+}
+#lock-screen .username { font-size: 28px; font-weight: 300; margin: 18px 0 22px; text-shadow: 0 2px 10px rgba(0,0,0,.5); }
+#lock-screen .btn.primary { min-width: 220px; padding: 8px 24px; }
+#lock-screen .lock-welcome {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; background: var(--accent);
+}
+#lock-screen .lock-welcome .wtext { color: #fff; font-size: 26px; font-weight: 300; margin-top: 26px; }
+
+/* ============ Shutdown screen ============ */
+#shutdown-screen { position: fixed; inset: 0; z-index: 9995; background: #000; color: #ddd; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+#shutdown-screen .sd-text { font-size: 16px; font-weight: 300; }
+#shutdown-screen .sd-sub { margin-top: 14px; font-size: 12px; opacity: .5; }
+#shutdown-screen.fading { animation: sdfade 1.4s ease forwards; }
+@keyframes sdfade { from { opacity: 1; background: #1a3a5c; } to { opacity: 1; background: #000; } }
+
+/* ============ Toasts ============ */
+#toasts { position: fixed; right: 12px; bottom: 52px; z-index: 9850; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  width: 344px; background: var(--panel); color: var(--text);
+  border: 1px solid var(--panel-border); border-left: 4px solid var(--accent);
+  box-shadow: 0 6px 24px rgba(0,0,0,.35);
+  padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;
+  animation: toast-in .22s ease;
+}
+.toast .t-icon { width: 22px; height: 22px; flex: none; margin-top: 2px; }
+.toast .t-icon svg { width: 100%; height: 100%; }
+.toast .t-title { font-weight: 600; font-size: 13px; }
+.toast .t-body { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.toast .t-x { margin-left: auto; cursor: pointer; opacity: .55; font-size: 14px; padding: 0 2px; }
+.toast .t-x:hover { opacity: 1; }
+@keyframes toast-in { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+.toast.out { transition: all .2s; transform: translateX(60px); opacity: 0; }
+
+/* ============ Visual filters ============ */
+#nightlight {
+  position: fixed; inset: 0; z-index: 9890; pointer-events: none;
+  background: rgba(255, 130, 20, .16);
+  mix-blend-mode: multiply;
+  animation: nl-in 1s ease;
+}
+@keyframes nl-in { from { opacity: 0; } to { opacity: 1; } }
+#brightness-overlay { position: fixed; inset: 0; z-index: 9885; pointer-events: none; background: #000; opacity: 0; }
+
+/* small screens */
+#too-small { position: fixed; inset: 0; z-index: 9999; background: #004275; color: #fff; display: flex; align-items: center; justify-content: center; text-align: center; padding: 30px; font-size: 16px; }

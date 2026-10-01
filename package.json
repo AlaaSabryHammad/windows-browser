@@ -1,0 +1,9 @@
+{
+  "name": "windows-10-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Windows 10 desktop experience running in the browser",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
