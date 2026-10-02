@@ -18,9 +18,13 @@ import * as clock from './clock.js';
 import * as stickynotes from './stickynotes.js';
 import * as weather from './weather.js';
 import * as run from './run.js';
+import * as word from './word.js';
+import * as excel from './excel.js';
 
 /* single: only one window at a time — launching again focuses it (and passes the new argument along) */
 export const APPS = {
+  word:        { id: 'word',        name: 'Word',             icon: I.word,     color: '#185abd', open: (a) => word.open(a) },
+  excel:       { id: 'excel',       name: 'Excel',            icon: I.excel,    color: '#107c41', open: (a) => excel.open(a) },
   explorer:    { id: 'explorer',    name: 'File Explorer',    icon: I.folder,   color: '#c78a0e', open: (a) => explorer.open(a) },
   edge:        { id: 'edge',        name: 'Microsoft Edge',   icon: I.edge,     color: '#0f5fa8', open: (a) => edge.open(a) },
   notepad:     { id: 'notepad',     name: 'Notepad',          icon: I.notepad,  color: '#2d6da3', open: (a) => notepad.open(a) },

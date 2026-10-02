@@ -6,6 +6,8 @@
  * in its own IndexedDB record so saving the tree stays cheap.
  */
 
+import { sampleDocx, sampleXlsx } from './office/samples.js';
+
 const LEGACY_FS_KEY = 'webwin-fs-v1';
 const LEGACY_BIN_KEY = 'webwin-bin-v1';
 const DB_NAME = 'webwin';
@@ -31,6 +33,15 @@ function folder(name, children = []) {
   return { id: uid(), name, type: 'folder', children, created: now(), modified: now() };
 }
 
+function officeSamples() {
+  try {
+    return [
+      { id: uid(), name: 'Welcome to Word.docx', type: 'file', kind: 'doc', content: sampleDocx(), created: now(), modified: now() },
+      { id: uid(), name: 'Budget.xlsx', type: 'file', kind: 'sheet', content: sampleXlsx(), created: now(), modified: now() },
+    ];
+  } catch (e) { console.warn('Could not create sample Office files', e); return []; }
+}
+
 function seed() {
   return folder('C:', [
     folder('Program Files', [
@@ -51,7 +62,8 @@ function seed() {
         ]),
         folder('Documents', [
           txtFile('Welcome.txt', 'Hi!\r\n\r\nThis is your Documents folder. Files you save from Notepad land here by default.\r\nThey stay saved even after you close the tab.'),
-          txtFile('Ideas.txt', '- Learn JavaScript modules\r\n- Build an OS in the browser (done!)\r\n- Take a break ☕')
+          txtFile('Ideas.txt', '- Learn JavaScript modules\r\n- Build an OS in the browser (done!)\r\n- Take a break ☕'),
+          ...officeSamples(),
         ]),
         folder('Downloads', [
           txtFile('todo.txt', '[x] Boot Windows in a browser\r\n[ ] Conquer the world')
@@ -329,12 +341,14 @@ export function isValidName(name) {
 }
 
 const EXT_KINDS = {
-  txt: ['txt', 'md', 'log', 'ini', 'cfg', 'json', 'csv', 'js', 'mjs', 'css', 'xml', 'bat', 'cmd', 'ps1', 'py', 'java', 'c', 'cpp', 'h', 'cs', 'ts', 'yml', 'yaml', 'sql', 'sh', 'reg', 'srt'],
+  txt: ['txt', 'md', 'log', 'ini', 'cfg', 'json', 'js', 'mjs', 'css', 'xml', 'bat', 'cmd', 'ps1', 'py', 'java', 'c', 'cpp', 'h', 'cs', 'ts', 'yml', 'yaml', 'sql', 'sh', 'reg', 'srt'],
   html: ['html', 'htm'],
   img: ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'bmp', 'ico', 'avif'],
   audio: ['mp3', 'wav', 'ogg', 'oga', 'm4a', 'flac', 'aac', 'opus', 'weba'],
   video: ['mp4', 'webm', 'ogv', 'mov', 'mkv', 'm4v'],
   pdf: ['pdf'],
+  doc: ['docx', 'doc', 'docm', 'odt', 'rtf'],
+  sheet: ['xlsx', 'xls', 'xlsm', 'ods', 'csv', 'tsv'],
 };
 export const extOf = (name) => { const i = name.lastIndexOf('.'); return i > 0 ? name.slice(i + 1).toLowerCase() : ''; };
 export function kindFromName(name) {
@@ -350,12 +364,13 @@ export function kindOf(node) {
 }
 const TYPE_LABELS = {
   folder: 'File folder', txt: 'Text Document', html: 'HTML Document', img: 'Image', audio: 'Audio file',
-  video: 'Video file', pdf: 'PDF Document', other: 'File',
+  video: 'Video file', pdf: 'PDF Document', doc: 'Microsoft Word Document', sheet: 'Microsoft Excel Worksheet', other: 'File',
 };
 export function typeLabel(node) {
   const k = kindOf(node);
   if (k === 'img') return `${extOf(node.name).toUpperCase() || 'Image'} File`;
   if (k === 'other' && extOf(node.name)) return `${extOf(node.name).toUpperCase()} File`;
+  if (k === 'sheet' && /^(csv|tsv)$/.test(extOf(node.name))) return 'Microsoft Excel Comma Separated Values File';
   return TYPE_LABELS[k];
 }
 

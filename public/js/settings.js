@@ -29,6 +29,10 @@ export const DEFAULT_TILES = [
     { id: 'stickynotes', size: 'sm' },
     { id: 'store', size: 'sm' },
   ] },
+  { name: 'Office', tiles: [
+    { id: 'word', size: 'md' },
+    { id: 'excel', size: 'md' },
+  ] },
   { name: 'Play and explore', tiles: [
     { id: 'minesweeper', size: 'md' },
     { id: 'mediaplayer', size: 'md' },
@@ -69,7 +73,7 @@ const DEFAULTS = {
   clockSeconds: false,
   searchMode: 'box',           /* 'box' | 'icon' | 'hidden' */
 
-  pinned: ['explorer', 'edge', 'notepad', 'calculator', 'paint', 'terminal'],
+  pinned: ['explorer', 'edge', 'word', 'excel', 'notepad', 'calculator', 'terminal'],
   tiles: null,                 /* null = DEFAULT_TILES */
   startupApps: [],
   fullscreenOnSignIn: true,
