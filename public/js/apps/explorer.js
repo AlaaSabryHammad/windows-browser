@@ -9,7 +9,7 @@ import { launch } from './registry.js';
 import { settings, updateSettings, onSettingsChange } from '../settings.js';
 import {
   iconHTML, openPath, itemMenu, setClipboard, pasteInto, clipboardHas, isCut, onClipboardChange, deleteItems,
-  renameWithFeedback, newFolder, newTextFile, startDrag, dragKind, handleDrop, pickAndImport, downloadNode, showProperties,
+  renameWithFeedback, newFolder, newTextFile, newOfficeFile, startDrag, dragKind, handleDrop, pickAndImport, downloadNode, showProperties,
 } from '../fileops.js';
 
 const QUICK = [
@@ -478,6 +478,8 @@ export function open(arg = null) {
       { label: 'New', submenu: [
         { label: 'Folder', icon: I.folder, action: actions.newfolder },
         { label: 'Text Document', icon: I.txt, action: actions.newtxt },
+        { label: 'Microsoft Word Document', icon: I.wordfile, action: async () => { const n = await newOfficeFile(state.path, 'word'); pendingRename = n.name; render(); } },
+        { label: 'Microsoft Excel Worksheet', icon: I.sheetfile, action: async () => { const n = await newOfficeFile(state.path, 'excel'); pendingRename = n.name; render(); } },
       ] },
       { label: 'Upload files from your PC…', icon: I.upload, action: actions.upload },
       '-',

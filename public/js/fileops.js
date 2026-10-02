@@ -1,7 +1,7 @@
 /* Shared file operations: open/open-with, clipboard, delete, rename, drag & drop, import/export, properties. */
 import {
   getNode, canonical, kindOf, typeLabel, sizeOf, formatSize, countItems, addressOf, addNode, makeFile, makeFolder,
-  uniqueName, deleteNode, destroyNode, renameNode, moveNode, copyNode, pathEquals, kindFromName, KNOWN,
+  uniqueName, deleteNode, destroyNode, renameNode, moveNode, copyNode, pathEquals, kindFromName, KNOWN, extOf,
 } from './fs.js';
 import { launch } from './apps/registry.js';
 import { I } from './icons.js';
@@ -9,7 +9,7 @@ import { esc, msgDialog, dialog, notify, confirmDialog } from './ui.js';
 import { updateSettings } from './settings.js';
 
 /* ---------------- icons ---------------- */
-const KIND_ICONS = { folder: 'folder', txt: 'txt', img: 'imgfile', audio: 'musicfile', video: 'videofile', pdf: 'pdffile', html: 'htmlfile', other: 'file' };
+const KIND_ICONS = { folder: 'folder', txt: 'txt', img: 'imgfile', audio: 'musicfile', video: 'videofile', pdf: 'pdffile', html: 'htmlfile', doc: 'wordfile', sheet: 'sheetfile', other: 'file' };
 export function iconFor(node) { return I[KIND_ICONS[kindOf(node)]] || I.file; }
 export function iconHTML(node, thumbs = true) {
   if (thumbs && kindOf(node) === 'img' && node.content) return `<img src="${esc(node.content)}" alt="" loading="lazy" draggable="false">`;
@@ -17,8 +17,8 @@ export function iconHTML(node, thumbs = true) {
 }
 
 /* ---------------- opening ---------------- */
-const OPENERS = { folder: 'explorer', txt: 'notepad', img: 'photos', audio: 'mediaplayer', video: 'mediaplayer', html: 'edge', pdf: 'edge' };
-const APP_NAMES = { notepad: 'Notepad', photos: 'Photos', mediaplayer: 'Media Player', edge: 'Microsoft Edge', paint: 'Paint' };
+const OPENERS = { folder: 'explorer', txt: 'notepad', img: 'photos', audio: 'mediaplayer', video: 'mediaplayer', html: 'edge', pdf: 'edge', doc: 'word', sheet: 'excel' };
+const APP_NAMES = { notepad: 'Notepad', photos: 'Photos', mediaplayer: 'Media Player', edge: 'Microsoft Edge', paint: 'Paint', word: 'Word', excel: 'Excel' };
 
 export function openPath(path, appId = null) {
   const node = getNode(path);
@@ -34,9 +34,13 @@ export function openPath(path, appId = null) {
 function openWithApps(node) {
   const k = kindOf(node);
   const apps = ['notepad'];
+  if (k === 'doc') apps.unshift('word');
+  if (k === 'sheet') apps.unshift('excel');
+  if (k === 'txt' || k === 'html') apps.push('word');
   if (k === 'img') apps.unshift('photos', 'paint');
   if (k === 'audio' || k === 'video') apps.unshift('mediaplayer');
   if (k === 'html' || k === 'pdf' || k === 'img' || k === 'txt') apps.push('edge');
+  if (k === 'doc' || (k === 'sheet' && !/^(csv|tsv)$/.test(extOf(node.name)))) return [...new Set(apps.filter(a => a !== 'notepad'))];
   return [...new Set(apps)];
 }
 
@@ -117,6 +121,23 @@ export function renameWithFeedback(dir, oldName, newName) {
 export function newFolder(dir) { return addNode(dir, makeFolder(uniqueName(dir, 'New folder'))); }
 export function newTextFile(dir) { return addNode(dir, makeFile(uniqueName(dir, 'New Text Document.txt'), 'txt', '')); }
 
+/* real, valid empty Office files (they open in Microsoft Office too) */
+export async function newOfficeFile(dir, type) {
+  if (type === 'word') {
+    const { htmlToDocx } = await import('./office/docx.js');
+    const { toDataURL } = await import('./office/zip.js');
+    const div = document.createElement('div');
+    div.innerHTML = '<p></p>';
+    const data = toDataURL(htmlToDocx(div), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    return addNode(dir, makeFile(uniqueName(dir, 'New Microsoft Word Document.docx'), 'doc', data));
+  }
+  const { writeXlsx } = await import('./office/xlsx.js');
+  const { Book } = await import('./office/formula.js');
+  const { toDataURL } = await import('./office/zip.js');
+  const data = toDataURL(writeXlsx(new Book()), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  return addNode(dir, makeFile(uniqueName(dir, 'New Microsoft Excel Worksheet.xlsx'), 'sheet', data));
+}
+
 /* ---------------- import from / export to the real PC ---------------- */
 const readAs = (file, how) => new Promise((res, rej) => {
   const r = new FileReader();
@@ -127,7 +148,7 @@ const readAs = (file, how) => new Promise((res, rej) => {
 
 async function importFile(dir, file) {
   const kind = kindFromName(file.name);
-  const asText = (kind === 'txt' || kind === 'html') && file.size < 20 * 1024 * 1024;
+  const asText = (kind === 'txt' || kind === 'html' || /\.(csv|tsv)$/i.test(file.name)) && file.size < 20 * 1024 * 1024;
   const content = await readAs(file, asText ? 'text' : 'data');
   const node = makeFile(file.name, kind === 'other' && !asText ? 'other' : kind, content);
   if (file.lastModified) node.modified = file.lastModified;

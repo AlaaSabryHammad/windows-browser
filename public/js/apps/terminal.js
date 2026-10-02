@@ -43,13 +43,13 @@ WHOAMI         Displays the current user.
 WINVER         Shows the About Windows dialog.
 
 Apps can be started by name too: notepad, calc, mspaint, explorer, msedge, taskmgr,
-control, camera, wmplayer, stikynot, clock, weather, minesweeper.`;
+control, camera, wmplayer, stikynot, clock, weather, minesweeper, winword, excel.`;
 
 export const EXE = {
   explorer: 'explorer.exe', edge: 'msedge.exe', notepad: 'notepad.exe', calculator: 'calc.exe', paint: 'mspaint.exe',
   terminal: 'cmd.exe', settings: 'SystemSettings.exe', photos: 'Microsoft.Photos.exe', taskmgr: 'Taskmgr.exe',
   minesweeper: 'MineSweeper.exe', recycle: 'explorer.exe', mediaplayer: 'Microsoft.Media.Player.exe', camera: 'WindowsCamera.exe',
-  clock: 'Time.exe', stickynotes: 'Microsoft.Notes.exe', weather: 'Microsoft.Msn.Weather.exe', run: 'rundll32.exe', store: 'WinStore.App.exe',
+  clock: 'Time.exe', stickynotes: 'Microsoft.Notes.exe', word: 'WINWORD.EXE', excel: 'EXCEL.EXE', weather: 'Microsoft.Msn.Weather.exe', run: 'rundll32.exe', store: 'WinStore.App.exe',
 };
 export const pidOf = (win) => 1000 + parseInt(win.id.slice(1), 10) * 4;
 
@@ -57,7 +57,7 @@ export const APP_ALIASES = {
   notepad: 'notepad', calc: 'calculator', calculator: 'calculator', paint: 'paint', mspaint: 'paint', explorer: 'explorer',
   edge: 'edge', msedge: 'edge', iexplore: 'edge', minesweeper: 'minesweeper', taskmgr: 'taskmgr', settings: 'settings',
   control: 'settings', 'ms-settings:': 'settings', photos: 'photos', camera: 'camera', wmplayer: 'mediaplayer', mediaplayer: 'mediaplayer',
-  stikynot: 'stickynotes', stickynotes: 'stickynotes', clock: 'clock', timedate: 'clock', weather: 'weather', cmd: 'terminal', run: 'run',
+  stikynot: 'stickynotes', stickynotes: 'stickynotes', winword: 'word', word: 'word', excel: 'excel', clock: 'clock', timedate: 'clock', weather: 'weather', cmd: 'terminal', run: 'run',
 };
 
 const COLORS = ['#0c0c0c', '#0037da', '#13a10e', '#3a96dd', '#c50f1f', '#881798', '#c19c00', '#cccccc', '#767676', '#3b78ff', '#16c60c', '#61d6d6', '#e74856', '#b4009e', '#f9f1a5', '#f2f2f2'];
@@ -528,6 +528,14 @@ export function open(arg = null) {
     try {
       const fn = commands[cmd];
       if (fn) await fn(args, line);
+      else if (args.length && APP_ALIASES[cmd.replace(/\.exe$/, '')] && cmd !== 'cmd') {
+        /* "notepad notes.txt", "winword report.docx", "excel budget.xlsx" */
+        const app = APP_ALIASES[cmd.replace(/\.exe$/, '')];
+        const p = resolve(args.join(' '));
+        const node = p && getNode(p);
+        if (node && (node.type === 'file' || app === 'explorer')) launch(app, { path: canonical(p) });
+        else print(`The system cannot find the file ${args.join(' ')}.`);
+      }
       else if (!startThing(line, false) && !startThing(cmd, false)) {
         print(`'${tokens[0]}' is not recognized as an internal or external command,\noperable program or batch file.`);
       }

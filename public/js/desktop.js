@@ -7,7 +7,7 @@ import { settings, updateSettings, onSettingsChange } from './settings.js';
 import { on as onWm, getFocused } from './wm.js';
 import {
   iconHTML, openPath, itemMenu, setClipboard, pasteInto, clipboardHas, isCut, onClipboardChange, deleteItems,
-  renameWithFeedback, newFolder, newTextFile, startDrag, dragKind, handleDrop, dropOnBin, currentDrag,
+  renameWithFeedback, newFolder, newTextFile, newOfficeFile, startDrag, dragKind, handleDrop, dropOnBin, currentDrag,
 } from './fileops.js';
 
 const POS_KEY = 'webwin-icons-v1';
@@ -279,6 +279,8 @@ export function initDesktop() {
       { label: 'New', submenu: [
         { label: 'Folder', icon: I.folder, action: () => { placeAt = cellAt(x, y); const n = newFolder(DESKTOP); pendingRename = n.name; } },
         { label: 'Text Document', icon: I.txt, action: () => { placeAt = cellAt(x, y); const n = newTextFile(DESKTOP); pendingRename = n.name; } },
+        { label: 'Microsoft Word Document', icon: I.wordfile, action: async () => { placeAt = cellAt(x, y); const n = await newOfficeFile(DESKTOP, 'word'); pendingRename = n.name; renderIcons(); } },
+        { label: 'Microsoft Excel Worksheet', icon: I.sheetfile, action: async () => { placeAt = cellAt(x, y); const n = await newOfficeFile(DESKTOP, 'excel'); pendingRename = n.name; renderIcons(); } },
       ] },
       '-',
       { label: 'Open in Command Prompt', icon: I.terminalSmall, action: () => launch('terminal', { cwd: DESKTOP }) },
