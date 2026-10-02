@@ -116,11 +116,24 @@ export function open() {
   win.body.querySelectorAll('button').forEach(b => b.addEventListener('click', () => press(b.dataset.k)));
 
   const keymap = { 'Enter': '=', 'Escape': 'c', 'Backspace': 'back', '+': '+', '-': '-', '*': '*', '/': '/', '.': '.', ',': '.', '%': 'pct', 'r': 'inv', 'q': 'sqr' };
-  const onKey = (e) => {
-    if (getFocusedIsThis()) {
-      const k = /^[0-9]$/.test(e.key) ? e.key : keymap[e.key];
-      if (k) { e.preventDefault(); press(k); }
+  const onKey = async (e) => {
+    if (!getFocusedIsThis() || e.altKey || e.metaKey) return;
+    if (e.ctrlKey && e.key.toLowerCase() === 'c') {
+      e.preventDefault();
+      try { await navigator.clipboard.writeText(String(unfmt(st.disp))); } catch { /* ignore */ }
+      return;
     }
+    if (e.ctrlKey && e.key.toLowerCase() === 'v') {
+      e.preventDefault();
+      try {
+        const t = (await navigator.clipboard.readText()).replace(/,/g, '').trim();
+        if (/^-?\d+(\.\d+)?$/.test(t)) { st.disp = t; st.fresh = false; render(); }
+      } catch { /* ignore */ }
+      return;
+    }
+    if (e.ctrlKey) return;
+    const k = /^[0-9]$/.test(e.key) ? e.key : keymap[e.key];
+    if (k) { e.preventDefault(); press(k); }
   };
   function getFocusedIsThis() {
     return document.querySelector('.window.active') === win.el;

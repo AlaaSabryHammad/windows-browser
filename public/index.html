@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#000000">
 <title>Windows 10</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='9' height='9' fill='%230078d7'/%3E%3Crect x='13' y='2' width='9' height='9' fill='%230078d7'/%3E%3Crect x='2' y='13' width='9' height='9' fill='%230078d7'/%3E%3Crect x='13' y='13' width='9' height='9' fill='%230078d7'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/base.css">
@@ -10,6 +11,7 @@
 <link rel="stylesheet" href="css/taskbar.css">
 <link rel="stylesheet" href="css/window.css">
 <link rel="stylesheet" href="css/apps.css">
+<link rel="stylesheet" href="css/shell.css">
 </head>
 <body data-theme="light">
 
@@ -21,7 +23,7 @@
     <div id="windows-layer"></div>
   </div>
   <div id="snap-preview" class="hidden"></div>
-  <div id="taskview-overlay" class="hidden"></div>
+  <div id="taskview-overlay"></div>
 
   <!-- Taskbar (built by js) -->
   <div id="taskbar" class="hidden"></div>
@@ -42,14 +44,21 @@
       <div class="lock-time">12:00 PM</div>
       <div class="lock-date">Friday, October 1</div>
     </div>
-    <div class="lock-hint">Click anywhere or press Enter to sign in</div>
+    <div class="lock-hint">Click anywhere or press any key to sign in</div>
     <div class="lock-login hidden">
       <div class="lock-login-inner">
-        <div class="avatar">A</div>
-        <div class="username">Alaa</div>
+        <div class="avatar">U</div>
+        <div class="username">User</div>
+        <form class="lock-pw hidden" autocomplete="off">
+          <input type="password" placeholder="Password" class="lock-pw-input" autocomplete="current-password">
+          <button type="submit" class="lock-go" title="Submit">→</button>
+        </form>
+        <div class="lock-err hidden"></div>
         <button class="btn primary" id="signin-btn">Sign in</button>
+        <div class="lock-hint2 hidden"></div>
       </div>
     </div>
+    <div class="lock-status"><span class="ls-net"></span><span class="ls-power" title="Power"></span></div>
   </div>
 
   <!-- Boot screen -->
@@ -63,7 +72,13 @@
     <div class="spinner"><span></span><span></span><span></span><span></span><span></span><span></span></div>
   </div>
 
-  <!-- Shutdown / restart screens -->
+  <!-- First-run setup -->
+  <div id="oobe" class="hidden"></div>
+
+  <!-- Sleep -->
+  <div id="sleep-screen" class="hidden"></div>
+
+  <!-- Shutdown / restart / sign-out screens -->
   <div id="shutdown-screen" class="hidden"></div>
 
   <script type="module" src="js/main.js"></script>

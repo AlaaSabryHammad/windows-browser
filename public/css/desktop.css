@@ -36,33 +36,41 @@
 /* ============ Desktop root & icons ============ */
 #desktop-root { position: absolute; inset: 0 0 40px 0; z-index: 1; overflow: hidden; }
 
-#desktop-icons {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column; flex-wrap: wrap;
-  align-content: flex-start; padding: 8px 4px;
-}
+#desktop-icons { position: absolute; inset: 0; }
+#desktop-icons.refreshing { opacity: 0; }
 .dicon {
-  width: 78px; height: 84px;
+  position: absolute;
+  height: auto; min-height: 70px;
   display: flex; flex-direction: column; align-items: center;
-  padding: 6px 2px 4px; margin: 1px;
+  padding: 4px 2px 4px;
   border: 1px solid transparent;
   cursor: default;
+  transition: left .12s ease, top .12s ease;
 }
 .dicon:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.2); }
 .dicon.selected { background: rgba(0,120,215,.35); border-color: rgba(120,190,255,.6); }
-.dicon .di-img { width: 42px; height: 42px; }
+.dicon.drop-hint { background: rgba(0,120,215,.5); border-color: #fff; }
+.dicon.cut { opacity: .5; }
+.dicon .di-img { width: 42px; height: 42px; flex: none; }
 .dicon .di-img svg, .dicon .di-img img { width: 100%; height: 100%; object-fit: contain; }
+.dicon .di-img img { object-fit: cover; border: 1px solid rgba(255,255,255,.6); box-shadow: 0 1px 3px rgba(0,0,0,.5); background: #fff; }
 .dicon .di-label {
   margin-top: 5px; font-size: 11.5px; color: #fff; text-align: center; line-height: 1.25;
   text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 6px rgba(0,0,0,.55);
-  max-width: 76px; overflow-wrap: break-word;
+  max-width: 100%; overflow-wrap: anywhere;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
+.dicon.selected .di-label { -webkit-line-clamp: 5; }
 .dicon.editing .di-label { display: none; }
 .dicon .di-edit {
-  font-size: 11.5px; width: 74px; margin-top: 5px; text-align: center;
+  font: inherit; font-size: 11.5px; width: 100%; min-height: 36px; margin-top: 5px; text-align: center; resize: none; overflow: hidden;
   border: 1px solid #6ca8dd; background: #fff; color: #000; padding: 1px 2px; outline: none;
 }
+#desktop-icons.size-large .di-img { width: 64px; height: 64px; }
+#desktop-icons.size-small { }
+#desktop-icons.size-small .di-img { width: 26px; height: 26px; }
+#desktop-icons.size-small .di-label { -webkit-line-clamp: 1; }
+#desktop-icons.size-small .dicon { min-height: 54px; }
 
 #selection-box {
   position: absolute; z-index: 50;
