@@ -1,5 +1,6 @@
 /* ============ Windows ============ */
-#windows-layer { position: absolute; inset: 0; }
+#windows-layer { position: absolute; inset: 0; pointer-events: none; }
+#windows-layer > .window { pointer-events: auto; }
 
 .window {
   position: absolute;
